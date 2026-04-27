@@ -209,6 +209,24 @@
     <string-array name="revanced_external_downloader_playlist_website">
         <item>https://github.com/deniscerri/ytdlnis/releases/latest</item>
     </string-array>
+    <string-array name="revanced_always_visible_timestamp_format_entries">
+        <item>Time passed / Full time</item>
+        <item>Time passed / Full time (Adjusted)</item>
+        <item>Time remaining (Adjusted)</item>
+        <item>Time end (Actual time)</item>
+        <item>Time remaining (Adjusted) (Time end)</item>
+        <item>Time passed</item>
+    </string-array>
+
+    <string-array name="revanced_always_visible_timestamp_format_entry_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
     <string-array name="revanced_overlay_button_play_all_type_entries">
         <item>@string/revanced_overlay_button_play_all_type_entry_0</item>
         <item>@string/revanced_overlay_button_play_all_type_entry_1</item>

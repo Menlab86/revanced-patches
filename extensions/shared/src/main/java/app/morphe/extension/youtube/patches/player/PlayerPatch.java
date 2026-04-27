@@ -770,6 +770,177 @@ public class PlayerPatch {
 
     // region [Seekbar components] patch
 
+    private static final java.util.WeakHashMap<View, TextView> alwaysVisibleTimestampMap = new java.util.WeakHashMap<>();
+
+    public static void updateAlwaysVisibleTimestamp(final TextView originalTimestampView, String timestampString) {
+        TextView existingView = alwaysVisibleTimestampMap.get(originalTimestampView);
+        
+        if (existingView == null) {
+            View parent = (View) originalTimestampView.getParent();
+            ViewGroup playerView = null;
+            while (parent != null) {
+                if (parent.getClass().getSimpleName().contains("PlayerView") || parent.getClass().getSimpleName().contains("PlayerViewGroup")) {
+                    playerView = (ViewGroup) parent;
+                    break;
+                }
+                if (parent.getParent() instanceof View) {
+                    parent = (View) parent.getParent();
+                } else {
+                    break;
+                }
+            }
+            
+            if (playerView == null && originalTimestampView.getRootView() instanceof ViewGroup) {
+                playerView = (ViewGroup) originalTimestampView.getRootView().findViewById(android.R.id.content);
+            }
+
+            if (playerView != null) {
+                final TextView newAlwaysVisibleTimestampView = new TextView(originalTimestampView.getContext());
+                newAlwaysVisibleTimestampView.setTextColor(0xFFFFFFFF);
+                newAlwaysVisibleTimestampView.setTextSize(14f);
+                newAlwaysVisibleTimestampView.setShadowLayer(5f, 0f, 0f, 0xFF000000);
+                
+                if (playerView instanceof RelativeLayout) {
+                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                    params.addRule(RelativeLayout.ALIGN_PARENT_START);
+                    params.bottomMargin = Utils.dipToPixels(24);
+                    params.setMarginStart(Utils.dipToPixels(16));
+                    playerView.addView(newAlwaysVisibleTimestampView, params);
+                } else if (playerView instanceof FrameLayout) {
+                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    params.gravity = android.view.Gravity.BOTTOM | android.view.Gravity.START;
+                    params.bottomMargin = Utils.dipToPixels(24);
+                    params.setMarginStart(Utils.dipToPixels(16));
+                    playerView.addView(newAlwaysVisibleTimestampView, params);
+                } else {
+                    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    playerView.addView(newAlwaysVisibleTimestampView, params);
+                }
+                
+                alwaysVisibleTimestampMap.put(originalTimestampView, newAlwaysVisibleTimestampView);
+                
+                // Start a periodic update to capture the ticking current time
+                newAlwaysVisibleTimestampView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (newAlwaysVisibleTimestampView.getParent() == null) return;
+                        
+                        try {
+                            long videoTime = app.morphe.extension.youtube.shared.VideoInformation.getVideoTime();
+                            long videoLength = app.morphe.extension.youtube.shared.VideoInformation.getVideoLength();
+                            float speed = app.morphe.extension.youtube.shared.VideoInformation.getPlaybackSpeed();
+                            if (speed <= 0f) speed = 1.0f;
+                            
+                            if (videoTime >= 0) {
+                                String formatPref = app.morphe.extension.youtube.patches.overlaybutton.AlwaysVisibleTimestampButton.isLongPressFormatActive() 
+                                    ? app.morphe.extension.youtube.settings.Settings.ALWAYS_VISIBLE_TIMESTAMP_FORMAT_LONG_PRESS.get() 
+                                    : app.morphe.extension.youtube.settings.Settings.ALWAYS_VISIBLE_TIMESTAMP_FORMAT_DEFAULT.get();
+                                int formatMode = 0;
+                                try { formatMode = Integer.parseInt(formatPref); } catch (Exception e) {}
+                                
+                                if (videoLength <= 0) {
+                                    Object cachedTag = originalTimestampView.getTag(android.R.id.text1);
+                                    if (cachedTag instanceof Long) {
+                                        videoLength = (Long) cachedTag;
+                                    } else {
+                                        String originalText = originalTimestampView.getText().toString();
+                                        if (originalText.contains(" / ")) {
+                                            String totalStr = originalText.substring(originalText.indexOf(" / ") + 3).trim();
+                                            String[] parts = totalStr.split(":");
+                                            try {
+                                                long parsedLength = 0;
+                                                if (parts.length == 3) {
+                                                    parsedLength = (Long.parseLong(parts[0]) * 3600 + Long.parseLong(parts[1]) * 60 + Long.parseLong(parts[2])) * 1000;
+                                                } else if (parts.length == 2) {
+                                                    parsedLength = (Long.parseLong(parts[0]) * 60 + Long.parseLong(parts[1])) * 1000;
+                                                } else if (parts.length == 1) {
+                                                    parsedLength = Long.parseLong(parts[0]) * 1000;
+                                                }
+                                                if (parsedLength > 0) {
+                                                    videoLength = parsedLength;
+                                                    originalTimestampView.setTag(android.R.id.text1, parsedLength);
+                                                }
+                                            } catch (Exception e) {}
+                                        }
+                                    }
+                                }
+                                
+                                String elapsed = formatTime(videoTime);
+                                String total = videoLength > 0 ? formatTime(videoLength) : "";
+                                
+                                long remainingTime = videoLength > 0 ? (videoLength - videoTime) : 0;
+                                long elapsedAdj = (long) (videoTime / speed);
+                                long totalAdj = (long) (videoLength / speed);
+                                long remainingAdj = (long) (remainingTime / speed);
+                                
+                                String elapsedAdjStr = formatTime(elapsedAdj);
+                                String totalAdjStr = formatTime(totalAdj);
+                                String remainingAdjStr = "-" + formatTime(remainingAdj);
+                                
+                                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("h:mm a", java.util.Locale.getDefault());
+                                java.util.Date endTime = new java.util.Date(System.currentTimeMillis() + remainingAdj);
+                                String endTimeStr = sdf.format(endTime);
+                                
+                                String finalText = elapsed + (total.isEmpty() ? "" : " / " + total);
+                                
+                                switch (formatMode) {
+                                    case 1:
+                                        if (videoLength > 0) {
+                                            finalText += " (" + elapsedAdjStr + " / " + totalAdjStr + " " + remainingAdjStr + ")";
+                                        }
+                                        break;
+                                    case 2:
+                                        if (videoLength > 0) {
+                                            finalText = remainingAdjStr;
+                                        }
+                                        break;
+                                    case 3:
+                                        if (videoLength > 0) {
+                                            finalText = endTimeStr;
+                                        }
+                                        break;
+                                    case 4:
+                                        if (videoLength > 0) {
+                                            finalText = remainingAdjStr + " (" + endTimeStr + ")";
+                                        }
+                                        break;
+                                    case 5:
+                                        finalText = elapsed;
+                                        break;
+                                    case 0:
+                                    default:
+                                        break;
+                                }
+                                newAlwaysVisibleTimestampView.setText(finalText);
+                            }
+                        } catch (Exception ignored) {
+                        }
+                        
+                        newAlwaysVisibleTimestampView.postDelayed(this, 100);
+                    }
+                });
+                
+                existingView = newAlwaysVisibleTimestampView;
+            }
+        }
+        
+        if (existingView != null) {
+            existingView.setVisibility(app.morphe.extension.youtube.settings.Settings.ALWAYS_VISIBLE_TIMESTAMP_ENABLED.get() ? View.VISIBLE : View.GONE);
+        }
+    }
+    
+    private static String formatTime(long ms) {
+        String t = app.morphe.extension.shared.utils.Utils.getTimeStamp(ms);
+        if (t.startsWith("00:")) t = t.substring(3);
+        if (t.startsWith("0") && t.length() > 4) t = t.substring(1);
+        else if (t.startsWith("0") && t.length() == 4) t = t.substring(1);
+        return t;
+    }
+
     public static String appendTimeStampInformation(String original) {
         if (!Settings.APPEND_TIME_STAMP_INFORMATION.get()) return original;
 

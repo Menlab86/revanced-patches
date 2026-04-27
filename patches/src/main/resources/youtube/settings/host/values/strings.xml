@@ -1736,6 +1736,10 @@ Miniplayer can be dragged off-screen to the left or right."</string>
     <string name="revanced_overlay_button_always_repeat_summary">"Tap to toggle always repeat states.
 Tap and hold to toggle pause after repeat states."</string>
     <string name="revanced_overlay_button_always_repeat_title">Show always repeat button</string>
+    <string name="revanced_overlay_button_always_visible_timestamp_summary">Tap to toggle always visible timestamp.</string>
+    <string name="revanced_overlay_button_always_visible_timestamp_title">Show always visible timestamp button</string>
+    <string name="revanced_always_visible_timestamp_format_default_title">Default Timestamp Format</string>
+    <string name="revanced_always_visible_timestamp_format_long_press_title">Long Press Timestamp Format</string>
     <string name="revanced_overlay_button_copy_video_url_summary">"Tap to copy video URL.
 Tap and hold to copy video URL with timestamp."</string>
     <string name="revanced_overlay_button_copy_video_url_timestamp_summary">"Tap to copy video URL with timestamp.
@@ -1759,7 +1763,14 @@ Tap here to get an API key."</string>
 
 Summarized and transcribed results are saved unless you closed the app or used Gemini on another video. Tap the button again to view results."</string>
     <string name="revanced_overlay_button_gemini_summarize_title">Show Gemini button</string>
+    <string name="revanced_overlay_button_rotate_summary">"Tap to rotate the screen.
+Tap and hold to rotate to reverse landscape."</string>
+    <string name="revanced_overlay_button_rotate_title">Show rotate button</string>
+    <string name="revanced_overlay_button_rotate_fullscreen_summary">"Tap to rotate the screen and toggle fullscreen.
+Tap and hold to rotate to reverse landscape and toggle fullscreen."</string>
+    <string name="revanced_overlay_button_rotate_fullscreen_title">Show rotate + fullscreen button</string>
     <string name="revanced_overlay_button_mute_volume_summary">Tap to mute volume of the current video. Tap again to unmute.</string>
+
     <string name="revanced_overlay_button_mute_volume_title">Show mute volume button</string>
     <string name="revanced_overlay_button_not_allowed_warning">Tap and hold to change button state.</string>
     <string name="revanced_overlay_button_play_all_not_available_toast">Unable to generate playlist due to channel id mismatch.</string>
@@ -1786,7 +1797,9 @@ Info:
     <string name="revanced_overlay_button_speed_dialog_reset">Playback speed reset: %sx.</string>
     <string name="revanced_overlay_button_speed_dialog_summary">"Tap to open speed dialog.
 Tap and hold to reset playback speed to 1.0x. Tap and hold again to reset back to default speed."</string>
+    <string name="revanced_overlay_button_quality_dialog_summary">Show overlay button to open quality dialog</string>
     <string name="revanced_overlay_button_speed_dialog_title">Show speed dialog button</string>
+    <string name="revanced_overlay_button_quality_dialog_title">Show quality dialog button</string>
     <string name="revanced_overlay_button_speed_dialog_type_title">Speed dialog type</string>
     <string name="revanced_overlay_button_vot_summary">Show overlay button to toggle voice-over translation for the current video</string>
     <string name="revanced_overlay_button_vot_title">Voice Over Translation</string>
@@ -2309,6 +2322,10 @@ Limitation: Dislikes may not appear if the user is not logged in or in incognito
     <string name="revanced_sb_vote_no_segments">There are no segments to vote for.</string>
     <string name="revanced_sb_vote_segment_time_to_from">%1$s to %2$s</string>
     <string name="revanced_sb_vote_upvote">Upvote</string>
+    <string name="morphe_sb_calculate_speed_and_sponsorblock">Calculate speed and SponsorBlock</string>
+    <string name="morphe_sb_calculate_speed_and_sponsorblock_sum">Calculate video duration and progress based on SponsorBlock and playback speed</string>
+    <string name="morphe_sb_calculate_speed_and_sponsorblock_sum_on">Video duration and progress will be adjusted based on playback speed and SponsorBlock skips.</string>
+    <string name="morphe_sb_calculate_speed_and_sponsorblock_sum_off">Video duration and progress will not account for speed or skipped segments.</string>
     <string name="revanced_search_settings_category_title">Search settings</string>
     <string name="revanced_search_title">Search</string>
     <string name="revanced_set_transcript_cookies_all_summary_off">Cookies are set only for auto-translated subtitle requests.</string>
@@ -2815,4 +2832,11 @@ Disclaimer: Cookies issued without signing in may be invalid or may take time to
     <string name="revanced_yandex_transcribe_subtitles_language_title">Yandex language</string>
     <string name="revanced_yandex_transcribe_subtitles_summary">Use Yandex transcription instead of Gemini. Yandex is faster and more reliable. No API key is required.</string>
     <string name="revanced_yandex_transcribe_subtitles_title">Yandex transcription</string>
+    <string name="revanced_whitelist_playback_speeds_title">Per-channel speed overrides</string>
+    <string name="revanced_whitelist_playback_speed_default_title">Default whitelisted speed</string>
+    <string name="revanced_whitelist_playback_speed_default_summary">Default playback speed: %s</string>
+    <string name="revanced_whitelist_playback_speed_dialog_title">Set custom speed for channel</string>
+    <string name="revanced_whitelist_playback_speed_dialog_hint">Target speed (e.g. 1.5)</string>
+    <string name="revanced_whitelist_playback_speed_value">%1$sx</string>
+    <string name="revanced_whitelist_playback_speed_reset">Reset</string>
 </resources>

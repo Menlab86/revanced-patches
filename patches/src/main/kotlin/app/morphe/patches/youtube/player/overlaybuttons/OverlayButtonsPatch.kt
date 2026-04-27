@@ -150,6 +150,7 @@ val overlayButtonsPatch = resourcePatch(
         // Inject hooks for overlay buttons.
         setOf(
             "AlwaysRepeatButton",
+            "AlwaysVisibleTimestampButton",
             "CopyVideoUrlButton",
             "CopyVideoUrlTimestampButton",
             "ExternalDownloadButton",
@@ -157,6 +158,9 @@ val overlayButtonsPatch = resourcePatch(
             "MuteVolumeButton",
             "PlayAllButton",
             "PlaybackSpeedDialogButton",
+            "RotateButton",
+            "RotateFullScreenButton",
+            "VideoQualityDialogButton",
             "VoiceOverTranslationButton",
             "WhitelistButton",
         ).forEach { className ->
@@ -170,8 +174,11 @@ val overlayButtonsPatch = resourcePatch(
                 "drawable",
                 "playlist_repeat_button.xml",
                 "playlist_shuffle_button.xml",
-                "revanced_repeat_button.xml",
+                "revanced_always_visible_timestamp_button_icon.xml",
                 "revanced_mute_volume_button.xml",
+                "revanced_repeat_button.xml",
+                "revanced_rotate_button.xml",
+                "revanced_rotate_fullscreen_button.xml",
                 "revanced_vot_button.xml",
             )
         )
@@ -298,17 +305,15 @@ val overlayButtonsPatch = resourcePatch(
                             "@id/timestamps_container" to "14.0dip"
                         )
 
-                        val layoutHeightWidth = if (useWiderButtonsSpace)
-                            "56.0dip"
-                        else
-                            "48.0dip"
+                        val layoutHeight = if (useWiderButtonsSpace) "56.0dip" else "48.0dip"
+                        val layoutWidth = if (useWiderButtonsSpace) "56.0dip" else "36.0dip"
 
                         if (isButton) {
                             node.setAttribute("android:paddingBottom", "12.0dip")
                             node.setAttribute("android:paddingTop", "12.0dip")
                             if (heightIsNotZero && widthIsNotZero) {
-                                node.setAttribute("android:layout_height", layoutHeightWidth)
-                                node.setAttribute("android:layout_width", layoutHeightWidth)
+                                node.setAttribute("android:layout_height", layoutHeight)
+                                node.setAttribute("android:layout_width", layoutWidth)
                             }
                         } else if (timBarItem.containsKey(id)) {
                             if (!useWiderButtonsSpace) {
@@ -316,9 +321,9 @@ val overlayButtonsPatch = resourcePatch(
                             }
                         }
 
-                        if (useWiderButtonsSpace && id.endsWith("_placeholder")) {
-                            node.setAttribute("android:layout_height", "56.0dip")
-                            node.setAttribute("android:layout_width", "56.0dip")
+                        if (id.endsWith("_placeholder")) {
+                            node.setAttribute("android:layout_height", layoutHeight)
+                            node.setAttribute("android:layout_width", layoutWidth)
                         }
 
                         if (id.equals("@+id/revanced_overlay_buttons_bottom_margin")) {
